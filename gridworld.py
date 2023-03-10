@@ -48,17 +48,17 @@ class GridWorld:
         p_jump = 0.15
         p_backward = 0.15
 
-        if action == "up":
-            return np.random.choice(["up", "down", "up up"], p=[p_success, p_backward, p_jump])
-        if action == "down":
-            return np.random.choice(["down", "up", "down down"], p=[p_success, p_backward, p_jump])
-        if action == "left":
-            return np.random.choice(["left", "right", "left left"], p=[p_success, p_backward, p_jump])
-        if action == "right":
-            return np.random.choice(["right", "left", "right right"], p=[p_success, p_backward, p_jump])
+        if action == "UP":
+            return np.random.choice(["UP", "DOWN", "UP UP"], p=[p_success, p_backward, p_jump])
+        if action == "DOWN":
+            return np.random.choice(["DOWN", "UP", "DOWN DOWN"], p=[p_success, p_backward, p_jump])
+        if action == "LEFT":
+            return np.random.choice(["LEFT", "RIGHT", "LEFT LEFT"], p=[p_success, p_backward, p_jump])
+        if action == "RIGHT":
+            return np.random.choice(["RIGHT", "LEFT", "RIGHT RIGHT"], p=[p_success, p_backward, p_jump])
 
     def movements(self, action, last_location):
-     # UP
+        # UP
         if action == 'UP':
             # If agent is at the top, stay still, collect reward
             if last_location[0] == 0:
@@ -108,15 +108,32 @@ class GridWorld:
 
         return reward
 
-        
     def make_step(self, action):
         """Moves the agent in the specified direction. If agent is at a border, agent stays still
         but takes negative reward. Function returns the reward for the move."""
         # Store previous location
         last_location = self.current_location
-        action = self.translate(action)
+        action = self.transitionModel(action)  # transition model for specific action
 
-        rewared = self.movements(action, last_location)
+        if len(action.split()) == 2:  # Jump
+            if action == 'UP UP':
+                reward = self.movements('UP', last_location)
+                last_location = self.current_location
+                reward += self.movements('UP', last_location)
+            elif action == 'DOWN DOWN':
+                reward = self.movements('DOWN', last_location)
+                last_location = self.current_location
+                reward += self.movements('DOWN', last_location)
+            elif action == 'LEFT LEFT':
+                reward = self.movements('LEFT', last_location)
+                last_location = self.current_location
+                reward += self.movements('LEFT', last_location)
+            elif action == 'RIGHT RIGHT':
+                reward = self.movements('RIGHT', last_location)
+                last_location = self.current_location
+                reward += self.movements('RIGHT', last_location)
+        else:
+            reward = self.movements(action, last_location)
         return reward
 
     def check_state(self):
