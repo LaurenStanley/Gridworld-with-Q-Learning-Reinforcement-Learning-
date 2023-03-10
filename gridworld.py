@@ -11,7 +11,7 @@ class GridWorld:
         self.grid = np.zeros(( self.height, self.width)) - 1
         
         self.current_location = [(ind, self.board[ind].index('S')) for ind in range(len(self.board)) if 'S' in self.board[ind]][0]
-     
+        self.barriers = [(ind, self.board[ind].index('X')) for ind in range(len(self.board)) if 'X' in self.board[ind]]
         self.terminal_states = self.find_terminal_states()
 
         # Set available actions
@@ -52,6 +52,8 @@ class GridWorld:
             # If agent is at the top, stay still, collect reward
             if last_location[0] == 0:
                 reward = self.get_reward(last_location)
+            elif ( self.current_location[0] - 1, self.current_location[1]) in self.barriers:
+                reward = self.get_reward(last_location)
             else:
                 self.current_location = ( self.current_location[0] - 1, self.current_location[1])
                 reward = self.get_reward(self.current_location)
@@ -60,6 +62,8 @@ class GridWorld:
         elif action == 'DOWN':
             # If agent is at bottom, stay still, collect reward
             if last_location[0] == self.height - 1:
+                reward = self.get_reward(last_location)
+            elif ( self.current_location[0] + 1, self.current_location[1]) in self.barriers:
                 reward = self.get_reward(last_location)
             else:
                 self.current_location = ( self.current_location[0] + 1, self.current_location[1])
@@ -70,6 +74,8 @@ class GridWorld:
             # If agent is at the left, stay still, collect reward
             if last_location[1] == 0:
                 reward = self.get_reward(last_location)
+            elif ( self.current_location[0], self.current_location[1] - 1) in self.barriers:
+                reward = self.get_reward(last_location)
             else:
                 self.current_location = ( self.current_location[0], self.current_location[1] - 1)
                 reward = self.get_reward(self.current_location)
@@ -78,6 +84,8 @@ class GridWorld:
         elif action == 'RIGHT':
             # If agent is at the right, stay still, collect reward
             if last_location[1] == self.width - 1:
+                reward = self.get_reward(last_location)
+            elif(  self.current_location[0], self.current_location[1] + 1) in self.barriers:
                 reward = self.get_reward(last_location)
             else:
                 self.current_location = ( self.current_location[0], self.current_location[1] + 1)

@@ -6,7 +6,7 @@ from randomagent import RandomAgent
 from q_agent import Q_Agent
 
 
-def play(environment, agent, trials=5, max_steps_per_episode=1000, learn=True):
+def play(environment, agent, trials=500, max_steps_per_episode=1000, learn=True):
     """The play function runs iterations and updates Q-values if desired."""
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
