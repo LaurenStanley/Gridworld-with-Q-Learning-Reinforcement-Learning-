@@ -1,28 +1,29 @@
 import numpy as np
+import csv 
 
 class GridWorld:
     ## Initialise starting data
-    def __init__(self):
+    def __init__(self, filename):
         # Set information about the gridworld
-        self.height = 5
-        self.width = 5
+        self.board = self.read(filename)
+        self.height = len(self.board)
+        self.width = len(self.board[0])
         self.grid = np.zeros(( self.height, self.width)) - 1
         
-        # Set random start location for the agent
-        self.current_location = ( 4, np.random.randint(0,5))
-        
-        # Set locations for the bomb and the gold
-        self.bomb_location = (1,3)
-        self.gold_location = (0,3)
-        self.terminal_states = [ self.bomb_location, self.gold_location]
-        
-        # Set grid rewards for special cells
-        self.grid[ self.bomb_location[0], self.bomb_location[1]] = -10
-        self.grid[ self.gold_location[0], self.gold_location[1]] = 10
-        
+        self.current_location = [(ind, self.board[ind].index('S')) for ind in range(len(self.board)) if 'S' in self.board[ind]][0]
+     
+        self.terminal_states = self.find_terminal_states()
+
         # Set available actions
         self.actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
     
+    def read(self, board_file):
+        board_array = []
+        with open(board_file,newline = '') as board:
+            board_data = csv.reader(board, delimiter='\t')
+            for row in board_data:
+                board_array.append(row)
+        return board_array
         
     ## Put methods here:
     def get_available_actions(self):
@@ -37,7 +38,7 @@ class GridWorld:
     
     def get_reward(self, new_location):
         """Returns the reward for an input position"""
-        return self.grid[ new_location[0], new_location[1]]
+        return self.grid[ new_location[0]][new_location[1]]
         
     
     def make_step(self, action):
@@ -88,3 +89,15 @@ class GridWorld:
         """Check if the agent is in a terminal state (gold or bomb), if so return 'TERMINAL'"""
         if self.current_location in self.terminal_states:
             return 'TERMINAL'
+    
+    def find_terminal_states(self):
+        terminal_states = []
+        for i in range(len(self.board)):
+            for j in range(len(self.board[0])):
+                try:
+                    if float(self.board[i][j]) != 0:
+                        terminal_states.append((i,j))
+                        self.grid[i][j] = float(self.board[i][j])
+                except ValueError:
+                    continue
+        return terminal_states
