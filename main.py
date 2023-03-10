@@ -114,7 +114,7 @@ def main():
 
     # Simple learning curve
     plt.plot(reward_per_episode)
-    print(agentQ.q_table)
+    # print(agentQ.q_table)
     #pretty(agentQ.q_table)
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
