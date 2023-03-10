@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 from gridworld import GridWorld
 from randomagent import RandomAgent
 from q_agent import Q_Agent
+import time
 
 
-def play(environment, agent, trials=10000, max_steps_per_episode=1000, learn=True):
+def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True):
     """The play function runs iterations and updates Q-values if desired."""
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
     reward_per_episode = [] # Initialise performance log
+    init = time.time()
     
-    for trial in range(trials): # Run trials
+    while (time.time() - init < max_time):
         cumulative_reward = 0 # Initialise values of each game
         step = 0
         game_over = False
@@ -108,7 +110,7 @@ def main():
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
 
-    reward_per_episode = play(environment, agentQ, trials=500)
+    reward_per_episode = play(environment, agentQ, max_time= 10 )
 
     # Simple learning curve
     plt.plot(reward_per_episode)
