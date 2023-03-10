@@ -39,13 +39,28 @@ class GridWorld:
     def get_reward(self, new_location):
         """Returns the reward for an input position"""
         return self.grid[ new_location[0]][new_location[1]]
-        
+    
+    def transitionModel(self, action):
+        p_success = 0.7
+        p_jump = 0.15
+        p_backward = 0.15
+
+        if action == "up":
+            return np.random.choice(["up", "down", "up up"], p=[p_success, p_backward, p_jump])
+        if action == "down":
+            return np.random.choice(["down", "up", "down down"], p=[p_success, p_backward, p_jump])
+        if action == "left":
+            return np.random.choice(["left", "right", "left left"], p=[p_success, p_backward, p_jump])
+        if action == "right":
+            return np.random.choice(["right", "left", "right right"], p=[p_success, p_backward, p_jump])
+
     
     def make_step(self, action):
         """Moves the agent in the specified direction. If agent is at a border, agent stays still
         but takes negative reward. Function returns the reward for the move."""
         # Store previous location
         last_location = self.current_location
+        action = self.translate(action)
         
         # UP
         if action == 'UP':
