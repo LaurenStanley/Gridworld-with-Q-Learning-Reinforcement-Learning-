@@ -6,7 +6,7 @@ from randomagent import RandomAgent
 from q_agent import Q_Agent
 
 
-def play(environment, agent, trials=500, max_steps_per_episode=1000, learn=True):
+def play(environment, agent, trials=10000, max_steps_per_episode=1000, learn=True):
     """The play function runs iterations and updates Q-values if desired."""
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -50,6 +50,33 @@ def pretty(d, indent=0):
             else:
                 print('\t' * (indent+1) + str(value))
 
+def showPolicy(environment, d):
+        for i in range(0, environment.height):
+            print('-'*(9*environment.width+1))
+            out = '| '
+            for j in range(0, environment.width):
+                token = " "
+                val = (i,j)
+                utes = d[i,j]
+                action = max(utes, key=utes.get)
+                if val in environment.barriers:
+                    token = 'X'
+                elif val in environment.terminal_states:
+                    token = str(environment.board[i][j])
+                else:
+                    if action == "UP":
+                        token = "^"
+                    if action == "DOWN":
+                        token = "V"
+                    if action == "RIGHT":
+                        token = ">"
+                    if action == "LEFT":
+                        token = "<"
+                    
+                out += token.ljust(6) + ' | '
+            print(out)
+        print('-'*(9*environment.width+1))
+
 def main():
     # Initialize environment and agent
     filename = 'test0.txt'
@@ -61,7 +88,8 @@ def main():
     # Simple learning curve
     plt.plot(reward_per_episode)
     print(agentQ.q_table)
-    pretty(agentQ.q_table)
+    #pretty(agentQ.q_table)
+    showPolicy(environment,agentQ.q_table)
 
 if __name__ == "__main__":
     main()
