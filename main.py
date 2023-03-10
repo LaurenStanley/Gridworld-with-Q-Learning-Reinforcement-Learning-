@@ -27,11 +27,12 @@ def play(environment, agent, trials=10000, max_steps_per_episode=1000, learn=Tru
                 
             cumulative_reward += reward
             step += 1
+            agent.heat_map[new_state] = agent.heat_map[new_state] + 1
             
             if environment.check_state() == 'TERMINAL': # If game is in terminal state, game over and start next trial
                 environment = reset(environment)
                 game_over = True     
-        #print(cumulative_reward)        
+        #print(cumulative_reward)
         reward_per_episode.append(cumulative_reward) # Append reward for current trial to performance log
         
     return reward_per_episode # Return performance log
@@ -49,6 +50,30 @@ def pretty(d, indent=0):
                 pretty(value, indent+1)
             else:
                 print('\t' * (indent+1) + str(value))
+
+def showHeatMap(environment, heatmap):
+    total = 0
+    for i in range(environment.height):
+        for j in range(environment.width):
+            total += heatmap[(i, j)]
+
+    for i in range(0, environment.height):
+        print('-'*(9*environment.width + 1))
+        out = '| '
+        for j in range(0, environment.width):
+            val = (i, j)
+            if val in environment.barriers:
+                out += 'X'.ljust(6) + ' | '
+            elif val in environment.terminal_states:
+                out += str(environment.board[i]
+                            [j]).ljust(6) + ' | '
+            else:
+                out += str(round(100 *
+                            heatmap[(i, j)]/total, 2)).ljust(6) + ' | '
+        print(out)
+    print('-'*(9*len(environment.board[0])+1))
+
+
 
 def showPolicy(environment, d):
         for i in range(0, environment.height):
@@ -89,6 +114,9 @@ def main():
     plt.plot(reward_per_episode)
     print(agentQ.q_table)
     #pretty(agentQ.q_table)
+    print("HeatMap : ")
+    showHeatMap(environment, agentQ.heat_map)
+    print("Policy :")
     showPolicy(environment,agentQ.q_table)
 
 if __name__ == "__main__":
