@@ -5,9 +5,12 @@ class Q_Agent():
     def __init__(self, environment, epsilon=0.2, alpha=0.1, gamma=1):
         self.environment = environment
         self.q_table = dict() # Store all Q-values in dictionary of dictionaries 
+        self.heat_map = dict() # Store heat map values for each block in the Q table
+
         for x in range(environment.height): # Loop through all possible grid spaces, create sub-dictionary for each
             for y in range(environment.width):
                 self.q_table[(x,y)] = {'UP':0, 'DOWN':0, 'LEFT':0, 'RIGHT':0} # Populate sub-dictionary with zero values for possible moves
+                self.heat_map[(x,y)] = 0 # Populate sub-dictionary with zero values for possible moves
 
         self.epsilon = epsilon
         self.alpha = alpha
