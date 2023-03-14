@@ -21,5 +21,5 @@ for row in grid_world:
 
 with open('gridworld.txt', 'w') as f:
     for row in grid_world:
-        f.write(' '.join(str(elem) for elem in row))
+        f.write('	'.join(str(elem) for elem in row))
         f.write('\n')
