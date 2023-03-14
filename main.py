@@ -120,7 +120,7 @@ def showPolicy(environment, d):
 
 def main():
     # Initialize environment and agent
-    filename = 'test0.txt'
+    filename = './gridworld.txt'
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
     epsilons = [0.05, 0.1, 0.3]
