@@ -123,11 +123,12 @@ def main():
     filename = './gridworld.txt'
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
-    epsilons = [0.05, 0.1, 0.3]
+    epsilons = [[0.05, False],[0.1, False],[0.3, False],[0.99, True]]
+
     results = []
     for epsilon in epsilons:
         print(epsilon)
-        reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10, epsilon = epsilon, epsilon_decay = False )
+        reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10, epsilon = epsilon[0], epsilon_decay = [1] )
         results.append(mean_rewards)
     # Simple learning curve
     for result in results:
@@ -135,6 +136,7 @@ def main():
     #plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
     plt.xlabel("# of Trials")
     plt.ylabel("Average Reward")
+    plt.legend(epsilons)
 
     plt.show()
     # print(agentQ.q_table)
