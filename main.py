@@ -90,39 +90,39 @@ def showHeatMap(environment, heatmap):
 
 
 def showPolicy(environment, d):
-        for i in range(0, environment.height):
-            print('-'*(9*environment.width+1))
-            out = '| '
-            for j in range(0, environment.width):
-                token = " "
-                val = (i,j)
-                utes = d[i,j]
-                action = max(utes, key=utes.get)
-                if val in environment.barriers:
-                    token = 'X'
-                elif val in environment.terminal_states:
-                    token = str(environment.board[i][j])
-                else:
-                    if action == "UP":
-                        token = "^"
-                    if action == "DOWN":
-                        token = "V"
-                    if action == "RIGHT":
-                        token = ">"
-                    if action == "LEFT":
-                        token = "<"
-                    
-                out += token.ljust(6) + ' | '
-            print(out)
+    for i in range(0, environment.height):
         print('-'*(9*environment.width+1))
+        out = '| '
+        for j in range(0, environment.width):
+            token = " "
+            val = (i,j)
+            utes = d[i,j]
+            action = max(utes, key=utes.get)
+            if val in environment.barriers:
+                token = 'X'
+            elif val in environment.terminal_states:
+                token = str(environment.board[i][j])
+            else:
+                if action == "UP":
+                    token = "^"
+                if action == "DOWN":
+                    token = "V"
+                if action == "RIGHT":
+                    token = ">"
+                if action == "LEFT":
+                    token = "<"
+                
+            out += token.ljust(6) + ' | '
+        print(out)
+    print('-'*(9*environment.width+1))
 
 def main():
     # Initialize environment and agent
-    filename = './gridworld.txt'
+    filename = './test2.txt'
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
 
-    reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10 )
+    reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 20 )
 
     # Simple learning curve
     plt.scatter(range(0,len(mean_rewards)),mean_rewards)
