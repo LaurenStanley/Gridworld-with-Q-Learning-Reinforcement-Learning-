@@ -23,7 +23,9 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             action = agent.choose_action(environment.actions) 
             reward = environment.make_step(action)
             new_state = environment.current_location
-            
+            print(agent.epsilon)
+            if agent.epsilon >= 0.1:
+                agent.epsilon += -.001
             if learn == True: # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
                 
