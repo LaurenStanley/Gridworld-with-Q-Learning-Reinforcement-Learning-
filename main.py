@@ -7,7 +7,7 @@ from q_agent import Q_Agent
 import time
 
 
-def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True):
+def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True, epsilon = 0.2, epsilon_decay = False):
     """The play function runs iterations and updates Q-values if desired."""
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -15,6 +15,7 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
     init = time.time()
     mean_rewards = []
     trials = 0
+    agent.epsilon = epsilon
     while (time.time() - init < max_time):
         cumulative_reward = 0 # Initialise values of each game
         step = 0
@@ -25,8 +26,9 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             reward = environment.make_step(action)
             new_state = environment.current_location
             #print(agent.epsilon)
-            if agent.epsilon >= 0.1:
-                agent.epsilon *= 0.9
+            if epsilon_decay:
+                if agent.epsilon >= 0.1:
+                    agent.epsilon *= 0.9
             if learn == True: # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
                 
@@ -121,11 +123,16 @@ def main():
     filename = 'test0.txt'
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
-
-    reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10 )
-
+    epsilons = [0.05, 0.1, 0.3]
+    results = []
+    for epsilon in epsilons:
+        print(epsilon)
+        reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10, epsilon = epsilon, epsilon_decay = False )
+        results.append(mean_rewards)
     # Simple learning curve
-    plt.scatter(range(0,len(mean_rewards)),mean_rewards)
+    for result in results:
+        plt.scatter(range(0,len(result)),result)
+    #plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
     plt.xlabel("# of Trials")
     plt.ylabel("Average Reward")
 
