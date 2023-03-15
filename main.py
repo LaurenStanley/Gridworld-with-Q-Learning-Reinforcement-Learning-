@@ -71,14 +71,6 @@ def reset(environment):
     environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]    
     return environment
 
-def pretty(d, indent=0):
-        for key, value in d.items():
-            print('\t' * indent + str(key))
-            if isinstance(value, dict):
-                pretty(value, indent+1)
-            else:
-                print('\t' * (indent+1) + str(value))
-
 def showHeatMap(environment, heatmap):
     total = 0
     for i in range(environment.height):
@@ -100,8 +92,6 @@ def showHeatMap(environment, heatmap):
                             heatmap[(i, j)]/total, 2)).ljust(6) + ' | '
         print(out)
     print('-'*(9*len(environment.board[0])+1))
-
-
 
 def showPolicy(environment, d):
     for i in range(0, environment.height):
@@ -157,8 +147,6 @@ def main():
     plt.legend(epsilons)
 
     plt.show()
-    # print(agentQ.q_table)
-    # pretty(agentQ.q_table)
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
     print("Policy :")
