@@ -1,8 +1,6 @@
 import numpy as np
-import operator
 import matplotlib.pyplot as plt
 from gridworld import GridWorld
-from randomagent import RandomAgent
 from q_agent import Q_Agent
 import time
 
