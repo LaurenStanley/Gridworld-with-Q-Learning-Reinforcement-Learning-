@@ -5,12 +5,21 @@ from q_agent import Q_Agent
 import time
 
 
-def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True, epsilon = 0.2, epsilon_decay = False):
+def get_epsilon(epsilon_initial,t, grid_size, flag):
+    if flag: # based on time
+        decay_rate = 1 / (1 + np.exp(-(t*10 / (grid_size))))
+        return epsilon_initial * decay_rate
+    else: 
+        decay_rate =  1/ (1 + np.exp(-(grid_size / 10)))
+        return epsilon_initial * decay_rate
+
+def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
     """The play function runs iterations and updates Q-values if desired."""
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
     reward_per_episode = [] # Initialise performance log
     init = time.time()
+    
     mean_rewards = []
     mean_reward = []
     time_steps = np.arange(init,max_time + init+.1,.1)
@@ -27,8 +36,9 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             new_state = environment.current_location
             #print(agent.epsilon)
             if epsilon_decay:
-                if agent.epsilon >= 0.1:
-                    agent.epsilon *= 0.9
+                print('time:',time.time() - init)
+                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, True)
+
             if learn == True: # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
                 
@@ -125,11 +135,13 @@ def main():
     filename = './test0.txt'
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
-    epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
+    # epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
+    epsilons = [[0.9, False]]
 
     results = []
     for epsilon in epsilons:
-        print(epsilon)
+        # print(epsilon)
+        # max time : how long the agent will explor the environment
         reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 5, epsilon = epsilon[0], epsilon_decay = [1] )
         results.append(mean_rewards)
     # Simple learning curve
@@ -138,6 +150,7 @@ def main():
     for result in results:
         time = np.arange(0,len(result)/10,.1)
         plt.scatter(time,result)
+
     #plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
     plt.xlabel("Time (s)")
     plt.ylabel("Average Reward")
@@ -145,7 +158,7 @@ def main():
 
     plt.show()
     # print(agentQ.q_table)
-    pretty(agentQ.q_table)
+    # pretty(agentQ.q_table)
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
     print("Policy :")
