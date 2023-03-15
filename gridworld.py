@@ -9,7 +9,7 @@ class GridWorld:
         self.board = self.read(filename)
         self.height = len(self.board)
         self.width = len(self.board[0])
-        self.grid = np.zeros((self.height, self.width)) - 1
+        self.grid = np.zeros((self.height, self.width)) - .1
 
         self.current_location = [(ind, self.board[ind].index('S')) for ind in range(
             len(self.board)) if 'S' in self.board[ind]][0]
