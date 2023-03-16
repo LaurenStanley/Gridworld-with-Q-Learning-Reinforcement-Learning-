@@ -4,6 +4,7 @@ from gridworld import GridWorld
 from q_agent import Q_Agent
 import time
 
+
 sample_frequency = 0.1 # seconds
 
 def get_epsilon(epsilon_initial,t, grid_size, flag):
@@ -38,11 +39,14 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             reward = environment.make_step(action)
             new_state = environment.current_location
             #print(agent.epsilon)
-            if epsilon_decay:
+            if epsilon_decay == 'Decay':
                 # print('time:',time.time() - init)
                 agent.epsilon = agent.epsilon*0.99999
                 # agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, False)
-
+            elif epsilon_decay == 'Linear':
+                if agent.epsilon > 0.000005:
+                    agent.epsilon = agent.epsilon - 0.000005
+                
             if learn == True: # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
                 
@@ -127,7 +131,7 @@ def main():
     environment = GridWorld(filename)
     agentQ = Q_Agent(environment)
     # epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
-    epsilons = [[0.9, True],[0.9, False]]
+    epsilons = [[0.9, 'Decay'],[0.9, 'Static'],[0.9,'Linear']]
 
     results = []
     epsilon_lists = []
