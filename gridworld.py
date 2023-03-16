@@ -137,7 +137,7 @@ class GridWorld:
         return reward
 
     def check_state(self):
-        """Check if the agent is in a terminal state (gold or bomb), if so return 'TERMINAL'"""
+        """Check if the agent is in a terminal state, if so return 'TERMINAL'"""
         if self.current_location in self.terminal_states:
             return 'TERMINAL'
 
