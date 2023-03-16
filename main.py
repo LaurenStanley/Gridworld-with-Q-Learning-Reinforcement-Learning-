@@ -41,7 +41,8 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             #print(agent.epsilon)
             if epsilon_decay == 'Decay':
                 # print('time:',time.time() - init)
-                agent.epsilon = agent.epsilon*0.99999
+                decay_rate = 0.99997/(1+ np.exp(-((environment.height*environment.width)/1.4)))
+                agent.epsilon = agent.epsilon* decay_rate
                 # agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, False)
             elif epsilon_decay == 'Linear':
                 if agent.epsilon > 0.000005:
