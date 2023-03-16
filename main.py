@@ -24,7 +24,7 @@ def get_epsilon(epsilon_initial,t, grid_size, flag, current_reward):
 
 
 # Loop which keeps approaching the terminal state over time
-def play(environment, agent, max_time =10, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
+def play(environment, agent, pt4_flag = False, max_time =10, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
     print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -50,7 +50,7 @@ def play(environment, agent, max_time =10, max_steps_per_episode=1000, learn=Tru
             if epsilon_decay == 'Decay':
                 # decay_rate = 0.99997/(1+ np.exp(-((environment.height*environment.width)/1.4)))
                 # agent.epsilon = agent.epsilon* decay_rate
-                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, True, cumulative_reward_array_mean)
+                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean)
             elif epsilon_decay == 'Linear':
                 if agent.epsilon > 0.000005:
                     agent.epsilon = agent.epsilon - 0.000005
@@ -143,7 +143,7 @@ def main():
     max_time = 2
     per_action_reward = 0.1
     transition_success = 0.7
-    p4_flag = False
+    pt4_flag = False
     ignore_time = False
     
     #filename = sys.argv[1]
@@ -164,7 +164,7 @@ def main():
     for epsilon in epsilons:
         # print(epsilon)
         # max time : how long the agent will explore the environment
-        reward_per_episode, mean_rewards, epsilon_list = play(environment, agentQ, max_time= 10, epsilon = epsilon[0], epsilon_decay = epsilon[1] )
+        reward_per_episode, mean_rewards, epsilon_list = play(environment, agentQ,pt4_flag, max_time= 10, epsilon = epsilon[0], epsilon_decay = epsilon[1])
         results.append(mean_rewards)
         epsilon_lists.append(epsilon_list)
     # Simple learning curve
