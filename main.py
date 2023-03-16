@@ -59,14 +59,14 @@ def play(environment, agent, pt4_flag = False, max_time =10, max_steps_per_episo
                 
             if learn == True: # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
-                
+
+            sum_rewards += reward
             cumulative_reward += reward
             step += 1
             agent.heat_map[new_state] = agent.heat_map[new_state] + 1
             
             if environment.check_state() == 'TERMINAL':
                 if time.time() > time_steps[current_timestep_index]:
-                    sum_rewards += cumulative_reward
                     cumulative_reward_array_mean = np.mean(cumulative_reward_array)
                     mean_rewards.append(cumulative_reward_array_mean)
                     epsilons.append(agent.epsilon)
@@ -144,8 +144,8 @@ def main():
     # Initialize environment and agent
     
     filename = './test0.txt'
-    max_time = 20
-    per_action_reward = 0.1
+    max_time = 30
+    per_action_reward = 1
     transition_success = 0.7
     pt4_flag = False
     ignore_time = False
@@ -174,22 +174,24 @@ def main():
     for result in results:
         time = np.arange(0,len(result)*sample_frequency,sample_frequency)
         plt.scatter(time,result)
+        plt.plot(time, result, '.r-') 
 
     #plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
     plt.xlabel("Time (s)")
     plt.ylabel("Average Reward")
     plt.legend(epsilons)
     plt.title('Reward over Time')
-    # plt.show()
+    plt.show()
 
     for epsilon_data in epsilon_lists:
         time = np.arange(0,len(epsilon_data)*sample_frequency,sample_frequency)
         plt.scatter(time, epsilon_data)
+        plt.plot(time, epsilon_data, '.b-') 
     plt.xlabel("Time (s)")
     plt.ylabel("Epsilon")
     plt.title('Epsilon over Time')
     plt.legend(epsilons)
-    # plt.show()
+    plt.show()
     
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
