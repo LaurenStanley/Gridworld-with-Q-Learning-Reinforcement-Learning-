@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from gridworld import GridWorld
 from q_agent import Q_Agent
 import time
-
+import os
+import sys
  
 # How often to sample data for plotting
 sample_frequency = 0.25 # seconds
@@ -127,10 +128,24 @@ def showPolicy(environment, d):
         print(out)
     print('-'*(9*environment.width+1))
 
-def main(): 
+def main():
+    #Initialize
+    os.system('cls') 
     # Initialize environment and agent
+    
     filename = './test0.txt'
+    max_time = 2
     per_action_reward = 0.1
+    transition_success = 0.7
+    ignore_time = False
+
+    #filename = sys.argv[1]
+    max_time = sys.argv[2]
+    #per_action_reward = sys.argv[3]
+    transition_success = sys.argv[4]
+    ignore_time = sys.argv[5]
+
+    
     environment = GridWorld(filename, per_action_reward)
     agentQ = Q_Agent(environment)
     # epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
