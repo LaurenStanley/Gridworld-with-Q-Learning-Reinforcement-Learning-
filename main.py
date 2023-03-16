@@ -20,9 +20,9 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
     reward_per_episode = [] # Initialise performance log
     init = time.time()
-    
+    epsilons = []
     mean_rewards = []
-    mean_reward = []
+    cumulative_reward_array = []
     time_steps = np.arange(init,max_time + init+.1,.1)
     current_timestep_index = 1
     agent.epsilon = epsilon
@@ -50,7 +50,8 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             
             if environment.check_state() == 'TERMINAL': # If game is in terminal state, game over and start next trial
                 if time.time() > time_steps[current_timestep_index]:
-                    mean_rewards.append(np.mean(mean_reward))
+                    mean_rewards.append(np.mean(cumulative_reward_array))
+                    epsilons.append(agent.epsilon)
                     mean_reward = []
                     current_timestep_index += 1
                     #for i in range(0, environment.height):
@@ -58,14 +59,15 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
                     #        utes = agent.q_table[i,j]
                     #        action = max(utes, key=utes.get)
                     #        mean_reward.append(agent.q_table[i,j].get(action))
-                    #                environment = reset(environment)
-                mean_reward.append(cumulative_reward)
+                    #                
+                cumulative_reward_array.append(cumulative_reward)
                 game_over = True
+                environment = reset(environment)
                 #trials += 1     
         #print(cumulative_reward)
         reward_per_episode.append(cumulative_reward) # Append reward for current trial to performance log
         
-    return reward_per_episode, mean_rewards # Return performance log
+    return reward_per_episode, mean_rewards, epsilons # Return performance log
 
 def reset(environment):
     environment.grid = np.zeros((environment.height, environment.width))-1
@@ -131,11 +133,13 @@ def main():
     epsilons = [[0.9, False]]
 
     results = []
+    epsilon_lists = []
     for epsilon in epsilons:
         # print(epsilon)
         # max time : how long the agent will explor the environment
-        reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10, epsilon = epsilon[0], epsilon_decay = [1] )
+        reward_per_episode, mean_rewards, epsilon_list = play(environment, agentQ, max_time= 10, epsilon = epsilon[0], epsilon_decay = [1] )
         results.append(mean_rewards)
+        epsilon_lists.append(epsilon_list)
     # Simple learning curve
     
    
@@ -147,7 +151,15 @@ def main():
     plt.xlabel("Time (s)")
     plt.ylabel("Average Reward")
     plt.legend(epsilons)
+    plt.show()
 
+    for epsilon_data in epsilon_lists:
+        time = np.arange(0,len(epsilon_data)/10,.1)
+        plt.scatter(time,epsilon_list)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Epsilon")
+    plt.legend(epsilons)
+   
     plt.show()
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
