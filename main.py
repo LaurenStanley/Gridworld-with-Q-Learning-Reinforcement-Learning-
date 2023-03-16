@@ -11,16 +11,15 @@ sample_frequency = 0.25 # seconds
 # Method for calculating the decay rate of epsilon
 def get_epsilon(epsilon_initial,t, grid_size, flag):
     if flag: # based on time
-        decay_rate = 1 / (1 + np.exp(-(t*10 / (grid_size))))
+        decay_rate = 0.99997/(1 + np.exp(-((grid_size)/1.4)))
         return epsilon_initial * decay_rate
     else: 
-        decay_rate =  1/ (1 + np.exp(-(grid_size/2)))
-        print(decay_rate)
-        return epsilon_initial * decay_rate
+        decay_rate = 0.99997/(1+ np.exp(-((grid_size)/1.4)))
+        return epsilon_initial* decay_rate
 
-#  All the code functionality is hidden in here
+
 # Loop which keeps approaching the terminal state over time
-def play(environment, agent, max_time =5, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
+def play(environment, agent, max_time =10, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
     print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -43,10 +42,9 @@ def play(environment, agent, max_time =5, max_steps_per_episode=1000, learn=True
             new_state = environment.current_location
             #print(agent.epsilon)
             if epsilon_decay == 'Decay':
-                # print('time:',time.time() - init)
-                decay_rate = 0.99997/(1+ np.exp(-((environment.height*environment.width)/1.4)))
-                agent.epsilon = agent.epsilon* decay_rate
-                # agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, False)
+                # decay_rate = 0.99997/(1+ np.exp(-((environment.height*environment.width)/1.4)))
+                # agent.epsilon = agent.epsilon* decay_rate
+                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, False)
             elif epsilon_decay == 'Linear':
                 if agent.epsilon > 0.000005:
                     agent.epsilon = agent.epsilon - 0.000005
@@ -58,7 +56,7 @@ def play(environment, agent, max_time =5, max_steps_per_episode=1000, learn=True
             step += 1
             agent.heat_map[new_state] = agent.heat_map[new_state] + 1
             
-            if environment.check_state() == 'TERMINAL': # If game is in terminal state, game over and start next trial
+            if environment.check_state() == 'TERMINAL':
                 if time.time() > time_steps[current_timestep_index]:
                     mean_rewards.append(np.mean(cumulative_reward_array))
                     epsilons.append(agent.epsilon)
@@ -68,7 +66,7 @@ def play(environment, agent, max_time =5, max_steps_per_episode=1000, learn=True
                 cumulative_reward_array.append(cumulative_reward)
                 game_over = True
                 environment = reset(environment)
-                #trials += 1     
+
         #print(cumulative_reward)
         reward_per_episode.append(cumulative_reward) # Append reward for current trial to performance log
         
@@ -132,7 +130,8 @@ def showPolicy(environment, d):
 def main(): 
     # Initialize environment and agent
     filename = './test0.txt'
-    environment = GridWorld(filename)
+    per_action_reward = 0.1
+    environment = GridWorld(filename, per_action_reward)
     agentQ = Q_Agent(environment)
     # epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
     epsilons = [[0.9, 'Decay'],[0.9, 'Static'],[0.9,'Linear']]
@@ -141,13 +140,11 @@ def main():
     epsilon_lists = []
     for epsilon in epsilons:
         # print(epsilon)
-        # max time : how long the agent will explor the environment
+        # max time : how long the agent will explore the environment
         reward_per_episode, mean_rewards, epsilon_list = play(environment, agentQ, max_time= 10, epsilon = epsilon[0], epsilon_decay = epsilon[1] )
         results.append(mean_rewards)
         epsilon_lists.append(epsilon_list)
     # Simple learning curve
-    
-   
     for result in results:
         time = np.arange(0,len(result)*sample_frequency,sample_frequency)
         plt.scatter(time,result)
@@ -166,8 +163,8 @@ def main():
     plt.ylabel("Epsilon")
     plt.title('Epsilon over Time')
     plt.legend(epsilons)
-   
     plt.show()
+    
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
     print("Policy :")

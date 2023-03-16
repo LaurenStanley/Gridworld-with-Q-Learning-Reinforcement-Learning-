@@ -2,7 +2,7 @@ import numpy as np
 
 class Q_Agent():
     # Intialise
-    def __init__(self, environment, epsilon=0.9, alpha=0.1, gamma=1):
+    def __init__(self, environment, epsilon = 0.9, alpha=0.1, gamma=0.95):
         self.environment = environment
         self.q_table = dict() # Store all Q-values in dictionary of dictionaries 
         self.heat_map = dict() # Store heat map values for each block in the Q table

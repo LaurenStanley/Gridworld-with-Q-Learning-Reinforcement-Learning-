@@ -1,15 +1,14 @@
 import numpy as np
 import csv
 
-
 class GridWorld:
     # Initialise starting data
-    def __init__(self, filename):
+    def __init__(self, filename, per_action_reward):
         # Set information about the gridworld
         self.board = self.read(filename)
         self.height = len(self.board)
         self.width = len(self.board[0])
-        self.grid = np.zeros((self.height, self.width)) - .1
+        self.grid = np.zeros((self.height, self.width)) - per_action_reward
 
         self.current_location = [(ind, self.board[ind].index('S')) for ind in range(
             len(self.board)) if 'S' in self.board[ind]][0]
