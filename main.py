@@ -10,7 +10,8 @@ def get_epsilon(epsilon_initial,t, grid_size, flag):
         decay_rate = 1 / (1 + np.exp(-(t*10 / (grid_size))))
         return epsilon_initial * decay_rate
     else: 
-        decay_rate =  1/ (1 + np.exp(-(grid_size / 10)))
+        decay_rate =  1/ (1 + np.exp(-(grid_size/2)))
+        print(decay_rate)
         return epsilon_initial * decay_rate
 
 def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
@@ -36,8 +37,9 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
             new_state = environment.current_location
             #print(agent.epsilon)
             if epsilon_decay:
-                print('time:',time.time() - init)
-                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, True)
+                # print('time:',time.time() - init)
+                agent.epsilon = agent.epsilon*0.99999
+                # agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, False)
 
             if learn == True: # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
@@ -132,7 +134,7 @@ def main():
     for epsilon in epsilons:
         # print(epsilon)
         # max time : how long the agent will explor the environment
-        reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 5, epsilon = epsilon[0], epsilon_decay = [1] )
+        reward_per_episode, mean_rewards = play(environment, agentQ, max_time= 10, epsilon = epsilon[0], epsilon_decay = [1] )
         results.append(mean_rewards)
     # Simple learning curve
     
