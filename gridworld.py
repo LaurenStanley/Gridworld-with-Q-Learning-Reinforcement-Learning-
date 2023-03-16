@@ -116,21 +116,21 @@ class GridWorld:
 
         if len(action.split()) == 2:  # Jump
             if action == 'UP UP':
+                _ = self.movements('UP', last_location)
+                last_location = self.current_location
                 reward = self.movements('UP', last_location)
-                last_location = self.current_location
-                reward += self.movements('UP', last_location)
             elif action == 'DOWN DOWN':
+                _ = self.movements('DOWN', last_location)
+                last_location = self.current_location
                 reward = self.movements('DOWN', last_location)
-                last_location = self.current_location
-                reward += self.movements('DOWN', last_location)
             elif action == 'LEFT LEFT':
+                _ = self.movements('LEFT', last_location)
+                last_location = self.current_location
                 reward = self.movements('LEFT', last_location)
-                last_location = self.current_location
-                reward += self.movements('LEFT', last_location)
             elif action == 'RIGHT RIGHT':
-                reward = self.movements('RIGHT', last_location)
+                _ = self.movements('RIGHT', last_location)
                 last_location = self.current_location
-                reward += self.movements('RIGHT', last_location)
+                reward = self.movements('RIGHT', last_location)
         else:
             reward = self.movements(action, last_location)
         return reward

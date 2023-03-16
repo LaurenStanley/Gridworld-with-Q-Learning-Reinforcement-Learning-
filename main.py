@@ -10,9 +10,9 @@ import sys
 sample_frequency = 0.25 # seconds
 
 # Method for calculating the decay rate of epsilon
-def get_epsilon(epsilon_initial,t, grid_size, flag, current_reward):
+def get_epsilon(epsilon_initial,t, grid_size, flag, current_reward, max_time):
     if flag: # based on time
-        time_remaining = 20-t
+        time_remaining = max_time-t
         grid_epsilon = 1-np.exp(-np.sqrt(grid_size)/10)
         time_epsilon = 1-np.exp(-time_remaining/4)
         reward_epsilon = np.exp(-(current_reward+9)/7)
@@ -52,7 +52,7 @@ def play(environment, agent, pt4_flag = False, max_time =10, max_steps_per_episo
             if epsilon_decay == 'Decay':
                 # decay_rate = 0.99997/(1+ np.exp(-((environment.height*environment.width)/1.4)))
                 # agent.epsilon = agent.epsilon* decay_rate
-                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean)
+                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean, max_time)
             elif epsilon_decay == 'Linear':
                 if agent.epsilon > 0.000005:
                     agent.epsilon = agent.epsilon - 0.000005
@@ -61,6 +61,8 @@ def play(environment, agent, pt4_flag = False, max_time =10, max_steps_per_episo
                 agent.learn(old_state, reward, new_state, action)
 
             sum_rewards += reward
+            if reward > 9:
+                print(reward)
             cumulative_reward += reward
             step += 1
             agent.heat_map[new_state] = agent.heat_map[new_state] + 1
@@ -144,8 +146,8 @@ def main():
     # Initialize environment and agent
     
     filename = './test0.txt'
-    max_time = 30
-    per_action_reward = 1
+    max_time = 10
+    per_action_reward = 0.1
     transition_success = 0.7
     pt4_flag = False
     ignore_time = False
