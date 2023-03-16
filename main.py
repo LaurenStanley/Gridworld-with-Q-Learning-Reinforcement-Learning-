@@ -10,10 +10,14 @@ import sys
 sample_frequency = 0.25 # seconds
 
 # Method for calculating the decay rate of epsilon
-def get_epsilon(epsilon_initial,t, grid_size, flag):
+def get_epsilon(epsilon_initial,t, grid_size, flag, current_reward):
     if flag: # based on time
-        decay_rate = 0.99997/(1 + np.exp(-((grid_size)/1.4)))
-        return epsilon_initial * decay_rate
+        time_remaining = 20-t
+        grid_epsilon = 1-np.exp(-np.sqrt(grid_size)/10)
+        time_epsilon = 1-np.exp(-time_remaining/4)
+        reward_epsilon = np.exp(-(current_reward+9)/7)
+        epsilon = grid_epsilon*time_epsilon*reward_epsilon
+        return epsilon
     else: 
         decay_rate = 0.99997/(1+ np.exp(-((grid_size)/1.4)))
         return epsilon_initial* decay_rate
@@ -32,6 +36,7 @@ def play(environment, agent, max_time =10, max_steps_per_episode=1000, learn=Tru
     time_steps = np.arange(init,max_time + init+sample_frequency,sample_frequency)
     current_timestep_index = 1
     agent.epsilon = epsilon
+    cumulative_reward_array_mean = -9
     while (time.time() - init < max_time):
         cumulative_reward = 0 # Initialise values of each game
         step = 0
@@ -45,7 +50,7 @@ def play(environment, agent, max_time =10, max_steps_per_episode=1000, learn=Tru
             if epsilon_decay == 'Decay':
                 # decay_rate = 0.99997/(1+ np.exp(-((environment.height*environment.width)/1.4)))
                 # agent.epsilon = agent.epsilon* decay_rate
-                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, False)
+                agent.epsilon = get_epsilon(agent.epsilon,time.time() - init, environment.height * environment.width, True, cumulative_reward_array_mean)
             elif epsilon_decay == 'Linear':
                 if agent.epsilon > 0.000005:
                     agent.epsilon = agent.epsilon - 0.000005
@@ -59,7 +64,8 @@ def play(environment, agent, max_time =10, max_steps_per_episode=1000, learn=Tru
             
             if environment.check_state() == 'TERMINAL':
                 if time.time() > time_steps[current_timestep_index]:
-                    mean_rewards.append(np.mean(cumulative_reward_array))
+                    cumulative_reward_array_mean = np.mean(cumulative_reward_array)
+                    mean_rewards.append(cumulative_reward_array_mean)
                     epsilons.append(agent.epsilon)
                     cumulative_reward_array = []
                     current_timestep_index += 1
@@ -141,18 +147,18 @@ def main():
     ignore_time = False
     
     #filename = sys.argv[1]
-    # max_time = sys.argv[2]
-    # #per_action_reward = sys.argv[3]
-    # transition_success = sys.argv[4]
-    # ignore_time = sys.argv[5]
+    #max_time = sys.argv[2]
+    #per_action_reward = sys.argv[3]
+    #transition_success = sys.argv[4]
+    #ignore_time = sys.argv[5]
 
     
     environment = GridWorld(filename, per_action_reward, transition_success)
     agentQ = Q_Agent(environment)
 
     # epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
-    epsilons = [[0.9, 'Decay'],[0.9, 'Static'],[0.9,'Linear']]
-
+    #epsilons = [[0.9, 'Decay'],[0.9, 'Static'],[0.9,'Linear']]
+    epsilons = [[1,'Decay']]
     results = []
     epsilon_lists = []
     for epsilon in epsilons:
@@ -171,7 +177,7 @@ def main():
     plt.ylabel("Average Reward")
     plt.legend(epsilons)
     plt.title('Reward over Time')
-    # plt.show()
+    plt.show()
 
     for epsilon_data in epsilon_lists:
         time = np.arange(0,len(epsilon_data)*sample_frequency,sample_frequency)
@@ -180,7 +186,7 @@ def main():
     plt.ylabel("Epsilon")
     plt.title('Epsilon over Time')
     plt.legend(epsilons)
-    # plt.show()
+    plt.show()
     
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
