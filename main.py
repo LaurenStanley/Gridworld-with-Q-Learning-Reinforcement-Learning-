@@ -4,9 +4,11 @@ from gridworld import GridWorld
 from q_agent import Q_Agent
 import time
 
+ 
+# How often to sample data for plotting
+sample_frequency = 0.25 # seconds
 
-sample_frequency = 0.1 # seconds
-
+# Method for calculating the decay rate of epsilon
 def get_epsilon(epsilon_initial,t, grid_size, flag):
     if flag: # based on time
         decay_rate = 1 / (1 + np.exp(-(t*10 / (grid_size))))
@@ -16,8 +18,9 @@ def get_epsilon(epsilon_initial,t, grid_size, flag):
         print(decay_rate)
         return epsilon_initial * decay_rate
 
-def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
-    """The play function runs iterations and updates Q-values if desired."""
+#  All the code functionality is hidden in here
+# Loop which keeps approaching the terminal state over time
+def play(environment, agent, max_time =5, max_steps_per_episode=1000, learn=True, epsilon = 0.9, epsilon_decay = True):
     print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -59,7 +62,7 @@ def play(environment, agent, max_time =1, max_steps_per_episode=1000, learn=True
                 if time.time() > time_steps[current_timestep_index]:
                     mean_rewards.append(np.mean(cumulative_reward_array))
                     epsilons.append(agent.epsilon)
-                    mean_reward = []
+                    cumulative_reward_array = []
                     current_timestep_index += 1
                     
                 cumulative_reward_array.append(cumulative_reward)
