@@ -28,7 +28,6 @@ def get_epsilon(epsilon_initial, t, grid_size, flag, current_reward, max_time):
 
 # Loop which keeps approaching the terminal state over time
 def play(environment, agent, pt4_flag=False, max_time=10, max_steps_per_episode=1000, learn=True, epsilon=0.9, epsilon_decay=True):
-    print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
     reward_per_episode = []  # Initialise performance log
@@ -87,7 +86,7 @@ def play(environment, agent, pt4_flag=False, max_time=10, max_steps_per_episode=
         # print(cumulative_reward)
         # Append reward for current trial to performance log
         reward_per_episode.append(cumulative_reward)
-    print("tiral:",trial, "sum rewards:",sum(sum_rewards))
+
     avg_reward_per_trial = sum(sum_rewards)/trial
     # Return performance log
     return reward_per_episode, avg_reward_per_trial, mean_rewards, epsilons
@@ -157,19 +156,23 @@ def main():
     os.system('cls')
     # Initialize environment and agent
 
-    filename = './test0.txt'
-    max_time = 20
-    per_action_reward = 0.1
-    transition_success = 0.7
-    pt4_flag = False
-    ignore_time = False
+    # filename = './test1.txt'
+    # max_time = 20
+    # per_action_reward = -0.1
+    # transition_success = 0.7
 
-    #filename = sys.argv[1]
-    #max_time = sys.argv[2]
-    #per_action_reward = sys.argv[3]
-    #transition_success = sys.argv[4]
-    #ignore_time = sys.argv[5]
+    filename = sys.argv[1]
+    max_time = int(sys.argv[2])
+    per_action_reward = float(sys.argv[3])
+    transition_success = float(sys.argv[4])
+    ignore_time = str(sys.argv[5])
+    
+    if ignore_time == 'True' or ignore_time == 'true':
+        ignore_time = True
+    elif ignore_time == 'False' or ignore_time == 'false':
+        ignore_time = False
 
+   
     environment = GridWorld(filename, per_action_reward, transition_success)
     agentQ = Q_Agent(environment)
 
@@ -180,7 +183,7 @@ def main():
         # print(epsilon)
         # max time : how long the agent will explore the environment
         reward_per_episode, avg_reward_per_trial, mean_rewards, epsilon_list = play(
-            environment, agentQ, pt4_flag, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1])
+            environment, agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1])
         # print(reward_per_episode)
         results.append(mean_rewards)
         print("mean reward per trial:", avg_reward_per_trial)

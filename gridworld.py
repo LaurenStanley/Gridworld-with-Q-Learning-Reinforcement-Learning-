@@ -8,7 +8,8 @@ class GridWorld:
         self.board = self.read(filename)
         self.height = len(self.board)
         self.width = len(self.board[0])
-        self.grid = np.zeros((self.height, self.width)) - per_action_reward
+
+        self.grid = np.zeros((self.height, self.width)) + per_action_reward
 
         self.current_location = [(ind, self.board[ind].index('S')) for ind in range(
             len(self.board)) if 'S' in self.board[ind]][0]
@@ -46,7 +47,7 @@ class GridWorld:
         temp = 1 - self.p_success
         p_jump = temp/2
         p_backward = temp/2
-
+    
         if action == "UP":
             return np.random.choice(["UP", "DOWN", "UP UP"], p=[ self.p_success, p_backward, p_jump])
         if action == "DOWN":
