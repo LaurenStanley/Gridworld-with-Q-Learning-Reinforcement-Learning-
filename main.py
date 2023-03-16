@@ -137,17 +137,19 @@ def main():
     max_time = 2
     per_action_reward = 0.1
     transition_success = 0.7
+    p4_flag = False
     ignore_time = False
-
+    
     #filename = sys.argv[1]
-    max_time = sys.argv[2]
-    #per_action_reward = sys.argv[3]
-    transition_success = sys.argv[4]
-    ignore_time = sys.argv[5]
+    # max_time = sys.argv[2]
+    # #per_action_reward = sys.argv[3]
+    # transition_success = sys.argv[4]
+    # ignore_time = sys.argv[5]
 
     
-    environment = GridWorld(filename, per_action_reward)
+    environment = GridWorld(filename, per_action_reward, transition_success)
     agentQ = Q_Agent(environment)
+
     # epsilons = [[0.01, False],[0.1, False],[0.3, False],[0.99, False]]
     epsilons = [[0.9, 'Decay'],[0.9, 'Static'],[0.9,'Linear']]
 
@@ -169,7 +171,7 @@ def main():
     plt.ylabel("Average Reward")
     plt.legend(epsilons)
     plt.title('Reward over Time')
-    plt.show()
+    # plt.show()
 
     for epsilon_data in epsilon_lists:
         time = np.arange(0,len(epsilon_data)*sample_frequency,sample_frequency)
@@ -178,7 +180,7 @@ def main():
     plt.ylabel("Epsilon")
     plt.title('Epsilon over Time')
     plt.legend(epsilons)
-    plt.show()
+    # plt.show()
     
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)

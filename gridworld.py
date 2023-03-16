@@ -3,7 +3,7 @@ import csv
 
 class GridWorld:
     # Initialise starting data
-    def __init__(self, filename, per_action_reward):
+    def __init__(self, filename, per_action_reward, p_success):
         # Set information about the gridworld
         self.board = self.read(filename)
         self.height = len(self.board)
@@ -15,7 +15,7 @@ class GridWorld:
         self.barriers = [(ind, self.board[ind].index('X'))
                          for ind in range(len(self.board)) if 'X' in self.board[ind]]
         self.terminal_states = self.find_terminal_states()
-
+        self.p_success = p_success
         # Set available actions
         self.actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
 
@@ -43,18 +43,18 @@ class GridWorld:
         return self.grid[new_location[0]][new_location[1]]
 
     def transitionModel(self, action):
-        p_success = 0.7
-        p_jump = 0.15
-        p_backward = 0.15
+        temp = 1 - self.p_success
+        p_jump = temp/2
+        p_backward = temp/2
 
         if action == "UP":
-            return np.random.choice(["UP", "DOWN", "UP UP"], p=[p_success, p_backward, p_jump])
+            return np.random.choice(["UP", "DOWN", "UP UP"], p=[ self.p_success, p_backward, p_jump])
         if action == "DOWN":
-            return np.random.choice(["DOWN", "UP", "DOWN DOWN"], p=[p_success, p_backward, p_jump])
+            return np.random.choice(["DOWN", "UP", "DOWN DOWN"], p=[ self.p_success, p_backward, p_jump])
         if action == "LEFT":
-            return np.random.choice(["LEFT", "RIGHT", "LEFT LEFT"], p=[p_success, p_backward, p_jump])
+            return np.random.choice(["LEFT", "RIGHT", "LEFT LEFT"], p=[ self.p_success, p_backward, p_jump])
         if action == "RIGHT":
-            return np.random.choice(["RIGHT", "LEFT", "RIGHT RIGHT"], p=[p_success, p_backward, p_jump])
+            return np.random.choice(["RIGHT", "LEFT", "RIGHT RIGHT"], p=[ self.p_success, p_backward, p_jump])
 
     def movements(self, action, last_location):
         # UP
