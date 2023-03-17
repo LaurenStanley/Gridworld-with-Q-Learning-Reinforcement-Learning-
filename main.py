@@ -14,7 +14,7 @@ sample_frequency = 0.25  # seconds
 
 
 def get_epsilon(epsilon_initial, t, grid_size, flag, current_reward, max_time):
-    if flag:  # based on time
+    if flag:
         time_remaining = max_time-t
         grid_epsilon = 1-np.exp(-np.sqrt(grid_size)/10)
         time_epsilon = 1-np.exp(-time_remaining/4)
@@ -162,7 +162,7 @@ def main():
     # transition_success = 0.7
 
     filename = sys.argv[1]
-    max_time = int(sys.argv[2])
+    max_time = float(sys.argv[2])
     per_action_reward = float(sys.argv[3])
     transition_success = float(sys.argv[4])
     ignore_time = str(sys.argv[5])
@@ -199,7 +199,7 @@ def main():
     plt.ylabel("Average Reward")
     plt.legend(epsilons)
     plt.title('Reward over Time')
-    plt.show()
+    plt.savefig('reward.png')
 
     for epsilon_data in epsilon_lists:
         time = np.arange(0, len(epsilon_data) *
@@ -210,7 +210,7 @@ def main():
     plt.ylabel("Epsilon")
     plt.title('Epsilon over Time')
     plt.legend(epsilons)
-    plt.show()
+    plt.savefig('epsilon.png')
 
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
