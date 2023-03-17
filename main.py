@@ -164,29 +164,26 @@ def showPolicy(environment, d):
 
 
 def main():
-    # Initialize
-    os.system('cls')
-    # Initialize environment and agent
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    filename = './test2.txt'
+    max_time = 10
+    per_action_reward = -0.1
+    transition_success = 0.7
+    ignore_time = False
 
-    # filename = './test1.txt'
-    # max_time = 20
-    # per_action_reward = -0.1
-    # transition_success = 0.7
-
-    filename = sys.argv[1]
-    max_time = float(sys.argv[2])
-    per_action_reward = float(sys.argv[3])
-    transition_success = float(sys.argv[4])
-    ignore_time = str(sys.argv[5])
+    # filename = sys.argv[1]
+    # max_time = float(sys.argv[2])
+    # per_action_reward = float(sys.argv[3])
+    # transition_success = float(sys.argv[4])
+    # ignore_time = str(sys.argv[5])
     
     if ignore_time == 'True' or ignore_time == 'true':
         ignore_time = True
     elif ignore_time == 'False' or ignore_time == 'false':
         ignore_time = False
 
-   
     environment = GridWorld(filename, per_action_reward, transition_success)
-    
 
     #epsilons = [[0.9, 'Decay1',0.999],[0.9, 'Linear',1],[0.01,'Static',1],[0.1,'Static',1],[0.3,'Static',1],[0.9,'Static',1]]
     #epsilons = [[0.9, 'Decay1',.9999],[0.9,'Decay1',.999],[0.9,'Decay1',.99]]
