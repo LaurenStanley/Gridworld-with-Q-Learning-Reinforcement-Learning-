@@ -8,7 +8,7 @@ import math
 import sys
 
 # How often to sample data for plotting
-sample_frequency = 0.25  # seconds
+sample_frequency = 0.1  # seconds
 
 # Method for calculating the decay rate of epsilon
 
@@ -27,7 +27,8 @@ def get_epsilon(epsilon_initial, t, grid_size, flag, current_reward, max_time):
 
 
 # Loop which keeps approaching the terminal state over time
-def play(environment, agent, pt4_flag=False, max_time=10, max_steps_per_episode=1000, learn=True, epsilon=0.9, epsilon_decay=True):
+def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_steps_per_episode=1000, learn=True, epsilon=0.9, epsilon_decay=True,decay_rate=0):
+    print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
     reward_per_episode = []  # Initialise performance log
@@ -39,6 +40,8 @@ def play(environment, agent, pt4_flag=False, max_time=10, max_steps_per_episode=
                            sample_frequency, sample_frequency)
     current_timestep_index = 1
     agent.epsilon = epsilon
+    print(epsilon)
+        
     sum_rewards = []
     trial = 0
     cumulative_reward_array_mean = -9
@@ -52,13 +55,12 @@ def play(environment, agent, pt4_flag=False, max_time=10, max_steps_per_episode=
             action = agent.choose_action(environment.actions)
             reward = environment.make_step(action)
             new_state = environment.current_location
-            # print(agent.epsilon)
+            
             if epsilon_decay == 'Decay':
-                agent.epsilon = get_epsilon(agent.epsilon, time.time(
-                ) - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean, max_time)
-            elif epsilon_decay == 'Linear':
-                if agent.epsilon > 0.000005:
-                    agent.epsilon = agent.epsilon - 0.000005
+                    agent.epsilon = get_epsilon(agent.epsilon, time.time(
+                    ) - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean, max_time)
+                
+            
 
             if learn == True:  # Update Q-values if learning is specified
                 agent.learn(old_state, reward, new_state, action)
@@ -80,20 +82,30 @@ def play(environment, agent, pt4_flag=False, max_time=10, max_steps_per_episode=
                 sum_rewards.append(cumulative_reward)
                 trial += 1
                 game_over = True
-                environment = reset(environment)
+                environment = reset(environment, per_action_reward)
 
+                # print(agent.epsilon)
+                if epsilon_decay == 'Decay1':
+                    agent.epsilon = agent.epsilon*decay_rate
+                    #agent.epsilon = get_epsilon(agent.epsilon, time.time(
+                    #) - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean, max_time)
+                elif epsilon_decay == 'Linear':
+                    if agent.epsilon > 0.0001:
+                        agent.epsilon = agent.epsilon - 0.0001
+
+                
 
         # print(cumulative_reward)
         # Append reward for current trial to performance log
         reward_per_episode.append(cumulative_reward)
-
+    #print("trial:",trial, "sum rewards:",sum(sum_rewards))
     avg_reward_per_trial = sum(sum_rewards)/trial
     # Return performance log
     return reward_per_episode, avg_reward_per_trial, mean_rewards, epsilons
 
 
-def reset(environment):
-    environment.grid = np.zeros((environment.height, environment.width))-1
+def reset(environment,per_action_reward):
+    environment.grid = np.zeros((environment.height, environment.width))-per_action_reward
     environment.find_terminal_states()
     environment.current_location = [(ind, environment.board[ind].index(
         'S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -174,16 +186,24 @@ def main():
 
    
     environment = GridWorld(filename, per_action_reward, transition_success)
-    agentQ = Q_Agent(environment)
+    
 
-    epsilons = [[1, 'Decay']]
+    #epsilons = [[0.9, 'Decay1',0.999],[0.9, 'Linear',1],[0.01,'Static',1],[0.1,'Static',1],[0.3,'Static',1],[0.9,'Static',1]]
+    #epsilons = [[0.9, 'Decay1',.9999],[0.9,'Decay1',.999],[0.9,'Decay1',.99]]
+    #epsilons = [[0.9,'Decay1',.999],[0.01,'Static',1]]
+
+    #epsilons = [[0.9,'Decay1',.999],[0.9,'Decay',1]]
+
+    epsilons = [[0.9, 'Decay',1],[0.01,'Static',1],[0.1,'Static',1],[0.3,'Static',1]]
+
     results = []
     epsilon_lists = []
     for epsilon in epsilons:
         # print(epsilon)
         # max time : how long the agent will explore the environment
+        agentQ = Q_Agent(environment)
         reward_per_episode, avg_reward_per_trial, mean_rewards, epsilon_list = play(
-            environment, agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1])
+            environment, per_action_reward,agentQ, pt4_flag, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
         # print(reward_per_episode)
         results.append(mean_rewards)
         print("mean reward per trial:", avg_reward_per_trial)
@@ -191,8 +211,8 @@ def main():
     # Simple learning curve
     for result in results:
         time = np.arange(0, len(result)*sample_frequency, sample_frequency)
-        plt.scatter(time, result)
-        plt.plot(time, result, '.r-')
+        #plt.scatter(time, result)
+        plt.plot(time, result, '.-')
 
     # plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
     plt.xlabel("Time (s)")
@@ -204,8 +224,8 @@ def main():
     for epsilon_data in epsilon_lists:
         time = np.arange(0, len(epsilon_data) *
                          sample_frequency, sample_frequency)
-        plt.scatter(time, epsilon_data)
-        plt.plot(time, epsilon_data, '.b-')
+        #plt.scatter(time, epsilon_data)
+        plt.plot(time, epsilon_data, '.-')
     plt.xlabel("Time (s)")
     plt.ylabel("Epsilon")
     plt.title('Epsilon over Time')
