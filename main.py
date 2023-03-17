@@ -166,17 +166,17 @@ def showPolicy(environment, d):
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     
-    filename = './test2.txt'
-    max_time = 10
-    per_action_reward = -0.1
-    transition_success = 0.7
-    ignore_time = False
+    # filename = './test2.txt'
+    # max_time = 10
+    # per_action_reward = -0.1
+    # transition_success = 0.7
+    # ignore_time = False
 
-    # filename = sys.argv[1]
-    # max_time = float(sys.argv[2])
-    # per_action_reward = float(sys.argv[3])
-    # transition_success = float(sys.argv[4])
-    # ignore_time = str(sys.argv[5])
+    filename = sys.argv[1]
+    max_time = float(sys.argv[2])
+    per_action_reward = float(sys.argv[3])
+    transition_success = float(sys.argv[4])
+    ignore_time = str(sys.argv[5])
     
     if ignore_time == 'True' or ignore_time == 'true':
         ignore_time = True
