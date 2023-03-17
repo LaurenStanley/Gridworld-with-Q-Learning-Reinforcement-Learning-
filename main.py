@@ -203,7 +203,7 @@ def main():
         # max time : how long the agent will explore the environment
         agentQ = Q_Agent(environment)
         reward_per_episode, avg_reward_per_trial, mean_rewards, epsilon_list = play(
-            environment, per_action_reward,agentQ, pt4_flag, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
+            environment, per_action_reward,agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
         # print(reward_per_episode)
         results.append(mean_rewards)
         print("mean reward per trial:", avg_reward_per_trial)
