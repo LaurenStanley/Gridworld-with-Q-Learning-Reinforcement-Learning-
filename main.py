@@ -201,7 +201,7 @@ def main():
             environment, per_action_reward,agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
         # print(reward_per_episode)
         # results.append(mean_rewards)
-        print("mean reward per trial:", avg_reward_per_trial)
+        # print("mean reward per trial:", avg_reward_per_trial)
         # epsilon_lists.append(epsilon_list)
     # # Simple learning curve
     # for result in results:
