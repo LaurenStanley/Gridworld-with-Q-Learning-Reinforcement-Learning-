@@ -27,7 +27,7 @@ def get_epsilon(epsilon_initial, t, grid_size, flag, current_reward, max_time):
 
 
 # Loop which keeps approaching the terminal state over time
-def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_steps_per_episode=1000, learn=True, epsilon=0.9, epsilon_decay=True,decay_rate=0):
+def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_steps_per_episode=2000, learn=True, epsilon=0.9, epsilon_decay=True,decay_rate=0):
     #print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -66,7 +66,7 @@ def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_
 
             cumulative_reward += reward
             step += 1
-            agent.heat_map[new_state] = agent.heat_map[new_state] + 1
+            agent.heat_map[new_state] = agent.heat_map[new_state] + per_action_reward
 
             if environment.check_state() == 'TERMINAL':
                 if time.time() > time_steps[current_timestep_index]:
@@ -100,7 +100,7 @@ def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_
 
 
 def reset(environment,per_action_reward):
-    environment.grid = np.zeros((environment.height, environment.width))-per_action_reward
+    environment.grid = np.zeros((environment.height, environment.width))+per_action_reward
     environment.find_terminal_states()
     environment.current_location = [(ind, environment.board[ind].index(
         'S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
@@ -143,6 +143,8 @@ def showPolicy(environment, d):
                 token = 'X'
             elif val in environment.terminal_states:
                 token = str(environment.board[i][j])
+            elif max(utes.values()) == 0:
+                token == ' ' 
             else:
                 if action == "UP":
                     token = "^"
@@ -199,7 +201,7 @@ def main():
             environment, per_action_reward,agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
         # print(reward_per_episode)
         # results.append(mean_rewards)
-        print("mean reward per trial:", avg_reward_per_trial)
+        print("Mean Reward Per Trial:", avg_reward_per_trial)
         # epsilon_lists.append(epsilon_list)
     # # Simple learning curve
     # for result in results:
