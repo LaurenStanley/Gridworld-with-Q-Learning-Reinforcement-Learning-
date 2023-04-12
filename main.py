@@ -28,7 +28,7 @@ def get_epsilon(epsilon_initial, t, grid_size, flag, current_reward, max_time):
 
 # Loop which keeps approaching the terminal state over time
 def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_steps_per_episode=1000, learn=True, epsilon=0.9, epsilon_decay=True,decay_rate=0):
-    print(epsilon_decay)
+    #print(epsilon_decay)
     #environment = GridWorld(filename)
     #environment.current_location = [(ind, environment.board[ind].index('S')) for ind in range(len(environment.board)) if 'S' in environment.board[ind]][0]
     reward_per_episode = []  # Initialise performance log
@@ -40,7 +40,7 @@ def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_
                            sample_frequency, sample_frequency)
     current_timestep_index = 1
     agent.epsilon = epsilon
-    print(epsilon)
+    #print(epsilon)
         
     sum_rewards = []
     trial = 0
@@ -178,11 +178,12 @@ def main():
     transition_success = float(sys.argv[4])
     ignore_time = str(sys.argv[5])
     
-    if ignore_time == 'True' or ignore_time == 'true':
+    if ignore_time == 'True' or ignore_time == 'true' or ignore_time == 't':
         ignore_time = True
-    elif ignore_time == 'False' or ignore_time == 'false':
+    elif ignore_time == 'False' or ignore_time == 'false' or ignore_time == 'f':
         ignore_time = False
 
+    print(ignore_time)
     environment = GridWorld(filename, per_action_reward, transition_success)
 
     #epsilons = [[0.9, 'Decay1',0.999],[0.9, 'Linear',1],[0.01,'Static',1],[0.1,'Static',1],[0.3,'Static',1],[0.9,'Static',1]]
@@ -191,7 +192,7 @@ def main():
 
     #epsilons = [[0.9,'Decay1',.999],[0.9,'Decay',1]]
 
-    epsilons = [[0.9, 'Decay',1],[0.01,'Static',1],[0.1,'Static',1],[0.3,'Static',1]]
+    epsilons = [[0.9, 'Decay',1]]
 
     results = []
     epsilon_lists = []
@@ -203,31 +204,31 @@ def main():
             environment, per_action_reward,agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
         # print(reward_per_episode)
         results.append(mean_rewards)
-        print("mean reward per trial:", avg_reward_per_trial)
+        #print("mean reward per trial:", avg_reward_per_trial)
         epsilon_lists.append(epsilon_list)
-    # Simple learning curve
-    for result in results:
-        time = np.arange(0, len(result)*sample_frequency, sample_frequency)
-        #plt.scatter(time, result)
-        plt.plot(time, result, '.-')
+    # # Simple learning curve
+    # for result in results:
+    #     time = np.arange(0, len(result)*sample_frequency, sample_frequency)
+    #     #plt.scatter(time, result)
+    #     plt.plot(time, result, '.-')
 
-    # plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
-    plt.xlabel("Time (s)")
-    plt.ylabel("Average Reward")
-    plt.legend(epsilons)
-    plt.title('Reward over Time')
-    plt.savefig('reward.png')
+    # # plt.scatter(range(0,len(mean_rewards)),mean_rewards[::-1])
+    # plt.xlabel("Time (s)")
+    # plt.ylabel("Average Reward")
+    # plt.legend(epsilons)
+    # plt.title('Reward over Time')
+    # plt.savefig('reward.png')
 
-    for epsilon_data in epsilon_lists:
-        time = np.arange(0, len(epsilon_data) *
-                         sample_frequency, sample_frequency)
-        #plt.scatter(time, epsilon_data)
-        plt.plot(time, epsilon_data, '.-')
-    plt.xlabel("Time (s)")
-    plt.ylabel("Epsilon")
-    plt.title('Epsilon over Time')
-    plt.legend(epsilons)
-    plt.savefig('epsilon.png')
+    # for epsilon_data in epsilon_lists:
+    #     time = np.arange(0, len(epsilon_data) *
+    #                      sample_frequency, sample_frequency)
+    #     #plt.scatter(time, epsilon_data)
+    #     plt.plot(time, epsilon_data, '.-')
+    # plt.xlabel("Time (s)")
+    # plt.ylabel("Epsilon")
+    # plt.title('Epsilon over Time')
+    # plt.legend(epsilons)
+    # plt.savefig('epsilon.png')
 
     print("HeatMap : ")
     showHeatMap(environment, agentQ.heat_map)
