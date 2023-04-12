@@ -59,7 +59,6 @@ def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_
             if epsilon_decay == 'Decay':
                     agent.epsilon = get_epsilon(agent.epsilon, time.time(
                     ) - init, environment.height * environment.width, pt4_flag, cumulative_reward_array_mean, max_time)
-                
             
 
             if learn == True:  # Update Q-values if learning is specified
@@ -92,13 +91,12 @@ def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_
                 elif epsilon_decay == 'Linear':
                     if agent.epsilon > 0.0001:
                         agent.epsilon = agent.epsilon - 0.0001
-        # print(cumulative_reward)
-        # Append reward for current trial to performance log
+
         reward_per_episode.append(cumulative_reward)
-    #print("trial:",trial, "sum rewards:",sum(sum_rewards))
-    avg_reward_per_trial = sum(sum_rewards)/trial
+    mean_reward_per_trial = sum(reward_per_episode)/trial
+    # mean_reward_per_trial = cumulative_reward/trial
     # Return performance log
-    return reward_per_episode, avg_reward_per_trial, mean_rewards, epsilons
+    return reward_per_episode, mean_reward_per_trial, mean_rewards, epsilons
 
 
 def reset(environment,per_action_reward):
