@@ -92,9 +92,6 @@ def play(environment, per_action_reward,agent, pt4_flag=False, max_time=10, max_
                 elif epsilon_decay == 'Linear':
                     if agent.epsilon > 0.0001:
                         agent.epsilon = agent.epsilon - 0.0001
-
-                
-
         # print(cumulative_reward)
         # Append reward for current trial to performance log
         reward_per_episode.append(cumulative_reward)
@@ -183,7 +180,7 @@ def main():
     elif ignore_time == 'False' or ignore_time == 'false' or ignore_time == 'f':
         ignore_time = False
 
-    print(ignore_time)
+    # print(ignore_time)
     environment = GridWorld(filename, per_action_reward, transition_success)
 
     #epsilons = [[0.9, 'Decay1',0.999],[0.9, 'Linear',1],[0.01,'Static',1],[0.1,'Static',1],[0.3,'Static',1],[0.9,'Static',1]]
@@ -194,8 +191,8 @@ def main():
 
     epsilons = [[0.9, 'Decay',1]]
 
-    results = []
-    epsilon_lists = []
+    # results = []
+    # epsilon_lists = []
     for epsilon in epsilons:
         # print(epsilon)
         # max time : how long the agent will explore the environment
@@ -203,9 +200,9 @@ def main():
         reward_per_episode, avg_reward_per_trial, mean_rewards, epsilon_list = play(
             environment, per_action_reward,agentQ, ignore_time, max_time, epsilon=epsilon[0], epsilon_decay=epsilon[1],decay_rate=epsilon[2])
         # print(reward_per_episode)
-        results.append(mean_rewards)
-        #print("mean reward per trial:", avg_reward_per_trial)
-        epsilon_lists.append(epsilon_list)
+        # results.append(mean_rewards)
+        print("mean reward per trial:", avg_reward_per_trial)
+        # epsilon_lists.append(epsilon_list)
     # # Simple learning curve
     # for result in results:
     #     time = np.arange(0, len(result)*sample_frequency, sample_frequency)
